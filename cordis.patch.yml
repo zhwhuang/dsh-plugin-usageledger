@@ -1,0 +1,67 @@
+# dsh-plugin-apicost bundle patch.
+#
+# Mounts the APICost host half into a dsh profile's composition. The host half is
+# a read-only view over DeepSeek's own APIs — it keeps no accounting of its own
+# and writes nothing to disk:
+#
+#   1. The open API (`https://api.deepseek.com`, authenticated with the API key)
+#      serves `GET /user/balance` and `GET /models`.
+#   2. The platform console (`https://platform.deepseek.com`, authenticated with
+#      the console token) serves the account's own usage endpoints, which are the
+#      only official source for 累计使用金额 / 累计 TOKEN / 每日趋势 / 调用次数.
+#
+# A third source needs no credential and no network: the harness's own
+# `ctx.tokenMeter` projection over the durable session log, which reports the
+# current session's provider-accounted tokens. It is a different 口径 from the
+# console's account-scoped bill, so the panel shows it as its own block and never
+# adds the two together.
+#
+# The browser half renders both in the Web sidebar seat and a detail window.
+#
+# Install: `dsh plugin --profile <name> add <absolute path or package name>`.
+# The command pnpm-installs the package into the profile and reconciles it into
+# the profile's `dsh.profile.bundles` layer list; this patch then inserts the
+# row below. Every field of `config` is optional — the values shown are the
+# plugin's own defaults.
+- insert:
+    - id: apicost
+      # Node-resolvable package name — must stay in sync with package.json
+      # `name`. Quoted because `@`/`-` lead-ins are YAML-sensitive.
+      name: 'dsh-plugin-apicost'
+      config:
+        # Credential references (environment-variable names) resolved per
+        # operation through ctx.credentials, then the process environment. The
+        # values never leave the host and are never written to a plugin file.
+        apiKeyEnv: DEEPSEEK_API_KEY
+        # The platform console token (a bearer JWT from a signed-in
+        # platform.deepseek.com session). Leave it unset and the panel shows the
+        # balance and model list only; paste it in the panel to store it in the
+        # harness credential store, or set it in the environment.
+        consoleTokenEnv: DEEPSEEK_PLATFORM_TOKEN
+        # Provider routes whose in-flight model the sidebar seat follows. The
+        # DeepSeek adapter registers itself as `deepseek-official`.
+        trackProviders:
+          - deepseek-official
+        # Follow every provider route, not just the ones listed above.
+        trackAllProviders: false
+        # Open API: balance and model list.
+        api:
+          enabled: true
+          # baseURL: https://api.deepseek.com
+          intervalMs: 60000
+          timeoutMs: 8000
+          # Floor between two on-demand refreshes, so a hot panel cannot spam
+          # the API.
+          minRefreshMs: 5000
+        # Platform console: all-time figures and the daily usage series.
+        platform:
+          enabled: true
+          # baseURL: https://platform.deepseek.com
+          intervalMs: 300000
+          timeoutMs: 10000
+          minRefreshMs: 30000
+        # Pin the session whose token usage the panel reports in its 「本次会话」
+        # block. Unset (the default) reports the only live session, or the newest
+        # one when several are live — and the panel then says how many it saw, so
+        # an ambiguous choice is visible rather than silent.
+        # sessionId: session-1

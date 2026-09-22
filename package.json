@@ -1,0 +1,55 @@
+{
+  "name": "dsh-plugin-apicost",
+  "version": "0.1.0",
+  "description": "APICost for DeepSeek Harness: 在侧边栏显示当前模型与 DeepSeek 账户余额，点开是一页用量账簿（总余额、累计使用金额、累计 TOKEN、每日金额/TOKEN/调用次数趋势、充值入口）。数据全部来自 DeepSeek 官方接口。",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "types": "./lib/types/client/index.d.ts",
+      "default": "./lib/client.js"
+    },
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "package.json"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "apicost",
+    "usage-ledger",
+    "balance",
+    "model-list"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-ui-sidebar"
+      ],
+      "platform": "web"
+    }
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  }
+}

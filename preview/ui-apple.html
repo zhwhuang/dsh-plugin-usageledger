@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="VYNIrJdXRmcnW3cFGhvV1G" data-dm-ref="1"><head data-page-node-id="uwPcI6JBTDJLVNJFftwX4C">
+<meta charset="utf-8" data-page-node-id="ptsi7uBjIPduygHG1mQ1DH">
+<meta name="viewport" content="width=device-width, initial-scale=1" data-page-node-id="e0pATP4Z47BHCiFWTHuYiq">
+<title>APICost · 界面评审稿 v9（紧凑型 · 提案待确认）</title>
+<style>
+/* ══════════════════════════════════════════════════════════════════════
+   APICost 评审稿 v9 · Apple 设计语言 · 紧凑型（提案）
+   相对 v8：收紧内边距/间距/字号，精简文案；动效保持不变（毛玻璃弹层、
+   胶囊指示器、柱图生长、按压回弹、reduced-motion 降级、hover 门控）。
+   ══════════════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#f5f5f7; --surface:#ffffff; --surface-2:#f5f5f7;
+  --ink:#1d1d1f; --ink-2:#6e6e73; --ink-3:#8e8e93;
+  --rule:rgba(0,0,0,.08); --rule-2:rgba(0,0,0,.10);
+  --accent:#0a84ff; --accent-strong:#007aff; --accent-soft:rgba(10,132,255,.10);
+  --green:#34c759; --green-soft:rgba(52,199,89,.12);
+  --red:#ff3b30; --red-soft:rgba(255,59,48,.10);
+  --glass:rgba(255,255,255,.62); --scrim:rgba(0,0,0,.30);
+  --shadow:0 24px 64px -22px rgba(0,0,0,.34),0 2px 10px rgba(0,0,0,.06);
+  --r-lg:18px; --r-md:12px; --r-sm:9px; --r-pill:999px;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --ease-out:cubic-bezier(.23,1,.32,1); --ease-in-out:cubic-bezier(.77,0,.175,1);
+  --ease-drawer:cubic-bezier(.32,.72,0,1);
+  --dur-fast:160ms; --dur:220ms; --dur-slow:300ms;
+  color-scheme:light;
+}
+body[data-theme="dark"]{
+  --bg:#000000; --surface:#1c1c1e; --surface-2:#2c2c2e;
+  --ink:#f5f5f7; --ink-2:#aeaeb2; --ink-3:#8e8e93;
+  --rule:rgba(255,255,255,.10); --rule-2:rgba(255,255,255,.14);
+  --accent:#0a84ff; --accent-strong:#5ac8fa; --accent-soft:rgba(10,132,255,.18);
+  --green:#30d158; --green-soft:rgba(48,209,88,.18);
+  --red:#ff453a; --red-soft:rgba(255,69,58,.18);
+  --glass:rgba(28,28,30,.62); --scrim:rgba(0,0,0,.55);
+  --shadow:0 28px 72px -22px rgba(0,0,0,.72),0 2px 12px rgba(0,0,0,.5);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);font-family:var(--font);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.45}
+
+.wrap{max-width:1000px;margin:0 auto;padding:28px 20px 60px}
+.caption{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.caption h1{margin:0;font-size:18px;font-weight:600;letter-spacing:-.01em}
+.caption p{margin:0;font-size:12px;color:var(--ink-2)}
+.controls{margin-left:auto;display:flex;gap:8px}
+.ctrl{font-size:12px;padding:6px 12px;border-radius:var(--r-sm);border:1px solid var(--rule-2);background:var(--surface);color:var(--ink);cursor:pointer;transition:transform var(--dur-fast) var(--ease-out),border-color var(--dur-fast) ease}
+.ctrl:hover{border-color:var(--ink-2)}
+.ctrl:active{transform:scale(.96)}
+
+/* ── dsh 设备框 ─────────────────────────────────────────────────────── */
+.device{display:flex;height:480px;border:1px solid var(--rule-2);border-radius:var(--r-lg);overflow:hidden;background:var(--surface);box-shadow:var(--shadow)}
+.sidebar{width:212px;flex:none;background:var(--surface);border-right:1px solid var(--rule);padding:12px 10px;display:flex;flex-direction:column;gap:3px}
+.brand{display:flex;align-items:center;gap:7px;padding:5px 7px 12px;font-size:15px;font-weight:600}
+.brand svg{color:var(--accent)}
+.nav{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:var(--r-sm);font-size:13px;color:var(--ink-2)}
+.nav.on{background:var(--surface-2);color:var(--ink);font-weight:500}
+.nav-foot{margin-top:auto;padding-top:8px}
+.seat{display:flex;flex-direction:column;gap:2px;padding:8px;border-radius:var(--r-md);background:var(--surface-2);cursor:pointer;transition:transform var(--dur-fast) var(--ease-out),background var(--dur-fast) ease}
+.seat:hover{background:var(--rule)}
+.seat:active{transform:scale(.985)}
+.seat-top{display:flex;align-items:baseline;gap:7px}
+.seat-label{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.seat-money{margin-left:auto;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
+.seat-bottom{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:9px;color:var(--ink-3)}
+.seat-model{color:var(--ink-2)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--rule-2);margin-left:auto}
+.dot-live{background:var(--accent);animation:breathe 1.8s var(--ease-in-out) infinite}
+@keyframes breathe{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+.workspace{flex:1;padding:20px;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:12px;text-align:center}
+.workspace .hint{max-width:30ch;line-height:1.7}
+
+/* ── 弹层（详情窗口） ───────────────────────────────────────────────── */
+.overlay{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:20px;pointer-events:none;opacity:0;visibility:hidden;transition:opacity var(--dur-slow) ease,visibility 0s linear var(--dur-slow)}
+.overlay.open{opacity:1;visibility:visible;pointer-events:auto;transition:opacity var(--dur-slow) ease}
+.scrim{position:absolute;inset:0;background:var(--scrim);backdrop-filter:blur(10px) saturate(180%);-webkit-backdrop-filter:blur(10px) saturate(180%)}
+.book{position:relative;width:min(720px,100%);max-height:86vh;overflow:hidden;display:flex;flex-direction:column;background:var(--glass);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border:1px solid var(--rule);border-radius:var(--r-lg);box-shadow:var(--shadow);transform:translateY(12px) scale(.97);opacity:0;transition:transform var(--dur-slow) var(--ease-drawer),opacity var(--dur) ease,filter var(--dur) ease}
+.overlay.open .book{transform:none;opacity:1}
+.book-inner{overflow:auto;padding:16px 18px 18px}
+.close{position:absolute;top:12px;right:12px;z-index:5;width:28px;height:28px;border:0;border-radius:50%;background:var(--surface-2);color:var(--ink-2);cursor:pointer;display:grid;place-items:center;transition:transform var(--dur-fast) var(--ease-out),background var(--dur-fast) ease}
+.close:hover{background:var(--rule)}
+.close:active{transform:scale(.9)}
+
+.mast{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding-bottom:9px;border-bottom:1px solid var(--rule)}
+.mast h1{margin:0;font-size:18px;font-weight:600;letter-spacing:-.01em}
+.mast-sub{font-family:var(--mono);font-size:10px;color:var(--ink-3);text-align:right;line-height:1.6}
+.mast-sub b{color:var(--ink-2);font-weight:500}
+
+.hero{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap;padding:14px 0 2px}
+.hero-k{font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3)}
+.hero-v{margin-top:4px;font-family:var(--mono);font-size:34px;font-weight:600;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--ink)}
+.hero-v small{margin-left:5px;font-size:12px;font-weight:500;color:var(--ink-3)}
+.hero-side{margin-left:auto;display:flex;flex-direction:column;gap:2px;font-family:var(--mono);font-size:11px;color:var(--ink-2);text-align:right}
+.hero-side b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.cash{display:flex;align-items:center;gap:10px;margin-top:8px}
+.btn{font-family:var(--font);font-size:13px;border:0;cursor:pointer;border-radius:var(--r-sm);padding:7px 14px;transition:transform var(--dur-fast) var(--ease-out),filter var(--dur-fast) ease,background var(--dur-fast) ease}
+.btn-primary{background:var(--accent);color:#fff;font-weight:500}
+.btn-primary:hover{filter:brightness(1.06)}
+.btn-primary:active{transform:scale(.96)}
+.cash a{font-family:var(--mono);font-size:10px;color:var(--ink-3);text-decoration:none}
+.cash a:hover{color:var(--accent)}
+
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.card{background:var(--surface-2);border:1px solid var(--rule);border-radius:var(--r-md);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.card-k{font-size:12px;color:var(--ink-3)}
+.card-v{font-family:var(--mono);font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink);word-break:break-word}
+.card-v small{margin-left:4px;font-size:10px;color:var(--ink-3)}
+.card--sum{background:var(--accent-soft);border-color:transparent}
+.card--sum .card-v{color:var(--accent)}
+.card-cta{margin-top:2px;align-self:flex-start;text-decoration:none}
+
+.trend{margin-top:14px}
+.trend-head{display:flex;align-items:center;gap:10px;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+.trend-t{font-size:14px;font-weight:600}
+.trend-s{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink-3)}
+.segmented{position:relative;display:inline-flex;background:var(--surface-2);border-radius:var(--r-pill);padding:2px}
+.segmented button{position:relative;z-index:1;border:0;background:transparent;padding:5px 12px;border-radius:var(--r-pill);font-family:var(--mono);font-size:11px;color:var(--ink-2);cursor:pointer;transition:color var(--dur) ease}
+.segmented button.is-on{color:var(--ink)}
+.segmented .thumb{position:absolute;top:2px;bottom:2px;background:var(--surface);border-radius:var(--r-pill);box-shadow:0 1px 3px rgba(0,0,0,.12);transition:transform var(--dur) var(--ease-out),width var(--dur) var(--ease-out)}
+.plot{display:flex;align-items:flex-end;gap:2px;height:112px;margin-top:12px}
+.bar{flex:1;background:var(--accent);border-radius:5px 5px 0 0;transform:scaleY(0);transform-origin:bottom;opacity:.92;transition:transform var(--dur-slow) var(--ease-out),background var(--dur-fast) ease,opacity var(--dur-fast) ease}
+.bar.show{transform:scaleY(1)}
+.axis{display:flex;justify-content:space-between;margin-top:4px;font-family:var(--mono);font-size:9px;color:var(--ink-3)}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.stat{background:var(--surface-2);border:1px solid var(--rule);border-radius:var(--r-md);padding:10px 12px}
+.stat-k{font-size:11px;color:var(--ink-3)}
+.stat-v{margin-top:4px;font-family:var(--mono);font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink)}
+.stat-v small{margin-left:3px;font-size:9px;color:var(--ink-3)}
+
+.models{margin-top:14px}
+.models .trend-head{border-bottom:0;padding-bottom:0}
+.models-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border:1px solid transparent;border-radius:var(--r-pill);font-family:var(--mono);font-size:11px;color:var(--ink-2);background:var(--surface-2)}
+.chip.on{background:var(--accent-soft);color:var(--accent)}
+.chip i{font-style:normal;font-size:8px;letter-spacing:.1em;text-transform:uppercase}
+
+.connect{margin-top:14px;background:var(--surface-2);border:1px solid var(--rule);border-radius:var(--r-md);padding:14px 16px}
+.connect .stamp{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--green)}
+.connect .stamp i{width:6px;height:6px;border-radius:50%;background:var(--green);font-style:normal}
+.connect .form{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.input{flex:1;min-width:200px;height:34px;padding:0 12px;border:1px solid var(--rule-2);border-radius:var(--r-sm);background:var(--surface);font-family:var(--mono);font-size:12px;color:var(--ink)}
+.input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.btn-ghost{background:var(--surface);border:1px solid var(--rule-2);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--ink-2)}
+.btn-go{background:var(--accent);color:#fff}
+
+.notes{margin-top:26px;border-top:1px solid var(--rule);padding-top:14px}
+.notes details{font-size:12.5px}
+.notes summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--ink-2);list-style:none}
+.notes summary::-webkit-details-marker{display:none}
+.notes summary::before{content:"▸ ";color:var(--ink-3)}
+.notes details[open] summary::before{content:"▾ "}
+.notes table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}
+.notes th,.notes td{text-align:left;padding:8px 10px;vertical-align:top;border-bottom:1px solid var(--rule)}
+.notes th{font-size:10px;color:var(--ink-3);font-weight:600}
+.notes td code{font-family:var(--mono);font-size:10.5px;color:var(--ink-2)}
+
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+@media (max-width:760px){.device{flex-direction:column;height:auto}.sidebar{width:100%;border-right:0;border-bottom:1px solid var(--rule)}.metrics{grid-template-columns:1fr}.stat-row{grid-template-columns:1fr}}
+@media (hover:hover) and (pointer:fine){
+  .bar:hover{background:var(--accent-strong);opacity:1}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important;animation-iteration-count:1 !important}
+  .bar{transform:none !important}
+  .book{transform:none !important}
+}
+</style>
+<style id="__dm_no_drag_style__">* { -webkit-user-drag: none !important; }</style><style id="__dm_bindable_badge_style__">[data-sp-bindable="database"]{outline:1px dashed #0088ff;outline-offset:2px;border-radius:4px;}[data-sp-bindable="database"] *{pointer-events:none !important;transition:none !important;animation:none !important;}[data-sp-bindable="database"]{transition:none !important;animation:none !important;}</style></head>
+<body data-page-node-id="C0vKaz21xhehkJCSM74yuU" style="position: relative;">
+
+<div class="wrap" data-page-node-id="KBvGgjOsd7SdQyF6u1rNK5">
+  <div class="caption" data-page-node-id="G3lm7ChIrHEHBD75amT7Vi">
+    <div data-page-node-id="4Dlu6C0wGRNJ2jy5rUZcbz">
+      <h1 data-page-node-id="U5Fk2Wo5ewVBBJvdASNVZV">APICost · v9（紧凑型 · Apple 设计语言）</h1>
+      <p data-page-node-id="ifQVWB7sn8ElsiGL2Wkl7U">提案待确认：点「API 用量」开详情，右上角切暗色 / 重播；确认后移植进 lib/client.js。</p>
+    </div>
+    <div class="controls" data-page-node-id="ZuWWZsr1TQLDQCmK07PCnN">
+      <button class="ctrl" id="t-theme" data-page-node-id="q21RCnBk2C4EUiOUrZfsNZ">暗色</button>
+      <button class="ctrl" id="t-replay" data-page-node-id="d63zYsucsODQCnu6hMT5wL">重播</button>
+    </div>
+  </div>
+
+  <!-- 设备框：侧栏座位 + 工作区 -->
+  <div class="device" data-page-node-id="bAXGgel5hmcx2AiphnuIMK">
+    <aside class="sidebar" data-page-node-id="TY5ntGCOEjRjR6Vykv7rs1">
+      <div class="brand" data-page-node-id="JHvSTNB9Cr7aEMJ8NISYUa">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" data-page-node-id="j4u6uzZoZBm32Qahos3iwp"><path d="M3 13.5c3.2 0 4.6-6 7.4-6s3.4 9 6.2 9 3-4.5 4.4-4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" data-page-node-id="h9DUpev0pQJOUtgkJwPbkk"></path></svg>
+        DeepSeek
+      </div>
+      <div class="nav on" data-page-node-id="OL9KEgys6XVEUyk1CX4oOc">会话</div>
+      <div class="nav" data-page-node-id="lfYd474hLb9DmNRROEV7wc">工作区</div>
+      <div class="nav" data-page-node-id="1M8xAEs02wEF3htIJ0GjTJ">定时任务</div>
+      <div class="nav-foot" data-page-node-id="bQiTsHnvwBPvjn5PKp5uvF">
+        <div class="seat" id="seat" role="button" tabindex="0" aria-label="打开用量概览" data-page-node-id="vOdklDOHnCV3H52BuePHCv">
+          <div class="seat-top" data-page-node-id="ZvnMIl3UDMa5ZsG8hxtQPu"><span class="seat-label" data-page-node-id="jAfS6dARV9CJxxyghuNRKu">API 用量</span><span class="seat-money" data-page-node-id="NzdIPWid2LFoqB91NkRBEN">¥43.36<small data-page-node-id="Fc5Acw9u3lwuQAr7zkIIQj"> CNY</small></span></div>
+          <div class="seat-bottom" data-page-node-id="YEYzgXFwaUiLnGfHBu03X2"><span class="seat-model" data-page-node-id="xoA1kVnmnzpfCBgBArVgQp">flash</span><span class="dot dot-live" data-page-node-id="btM3VDcsbKzUmc03MGXXdG"></span></div>
+        </div>
+      </div>
+    </aside>
+    <main class="workspace" data-page-node-id="alTUNcm5Xy11h0fJ0hEVOu">
+      <div class="hint" data-page-node-id="Yg79FWcrh9z05Az79YMXJt">点底部「API 用量」打开用量概览——机房管理员常态化环境检查入口。</div>
+    </main>
+  </div>
+
+  <!-- 动效审计（折叠） -->
+  <section class="notes" data-page-node-id="VDGETjtb6HvPOHTyWzQqEy">
+    <details data-page-node-id="Mwd4yPqjnJ6QocDTrw7Biy">
+      <summary data-page-node-id="n6ju1aACxEG1ckatPMEGOe">动效审计 · Before / After（相对 v8）</summary>
+      <table data-page-node-id="VEdPYf1lEFgxsOxHO5bKeI">
+        <thead data-page-node-id="KFRHvT74IxkfPgSCmxx5tp"><tr data-page-node-id="tugkyXu9rGHZCimxo8ANxo"><th data-page-node-id="nUeREpd45R5jBm7feOFHNw">Before</th><th data-page-node-id="Wm5DhToyVlnC5NJLCfJzAC">After</th><th data-page-node-id="n4fw5eH8GDUrp9l0JyIbtu">Why</th></tr></thead>
+        <tbody data-page-node-id="nZfKXX25MJ4sqHB545z5w7">
+          <tr data-page-node-id="PkFHMAG6sXj0f7lXzvXdNE"><td data-page-node-id="PZHSXEOQQu2D3XoXHhccAE">弹层直接出现</td><td data-page-node-id="APyRnN5BexxUMKFjDvxxbk"><code data-page-node-id="UYAuEtEseWuqo8bMHaPUqJ">translateY(12px) scale(.97)→0</code> + 毛玻璃，<code data-page-node-id="d66ZgWBHQf8yHC9UUDfQGC">--ease-drawer</code> 300ms</td><td data-page-node-id="k4g1n3mTJmmYE1yTwQQtvD">模态居中豁免原点缩放，轻微上浮+缩小避免凭空弹出</td></tr>
+          <tr data-page-node-id="nxvVv5zypegzLSCoMKWKSg"><td data-page-node-id="Z45IfABDYZb9Lo3DITHhJv">切换趋势整段重渲</td><td data-page-node-id="xOUeGz4qY8fu7okDMkOMta">胶囊指示器滑动 220ms ease-out</td><td data-page-node-id="8xzIiS3DxIjJCmohCFab8x">位移表达"同数据换读法"，即时跟手</td></tr>
+          <tr data-page-node-id="BTbAhoCExc3s1Gldpa23vp"><td data-page-node-id="sEoufA4VjPvQn0Psf8JGGS">柱子无入场</td><td data-page-node-id="dxkTOENsZNBB8bmgtzXIbp"><code data-page-node-id="ifAGusFRSfaaxOdmh6JoHm">scaleY(0→1)</code> 基线生长 + 错峰，仅 GPU</td><td data-page-node-id="0OZC5PK0Tg8AeyawFO1HwH">"长出来"比瞬现自然</td></tr>
+          <tr data-page-node-id="tekVmQ7TOHNv0abJMCBTGf"><td data-page-node-id="sXQquyXID5zPqEHT0Ty7EV">按钮无按压反馈</td><td data-page-node-id="PP6rkWFp8GkBj6DA04dVnH"><code data-page-node-id="wIVZdw5LnGmbeJEMOM1fFW">:active scale(.96)</code> 160ms</td><td data-page-node-id="rKDAF3lBokLKbBgikQJHYV">手指需要回弹感</td></tr>
+          <tr data-page-node-id="D6bLuzGsDAXcW1T86IZy24"><td data-page-node-id="gKZtW5b0mnmJ6xXocNz9OG">状态点硬切换</td><td data-page-node-id="oJRta6lmxNxNxlU6O2Yvj2"><code data-page-node-id="dVIuqGhmA3ladJ2UTuYc90">breathe</code> 1.8s ease-in-out</td><td data-page-node-id="4KSItmyH4YHnC21hcPs7BI">调用中给柔和呼吸</td></tr>
+          <tr data-page-node-id="E3TucA2YbLY4VccJRsni0a"><td data-page-node-id="hXz3WEXgw1bKmCEkLH7Hos">无降级</td><td data-page-node-id="m9CIiTNUHT2sgNLltffbA3"><code data-page-node-id="6XpzfLGINZnFqRMqCiMz25">reduced-motion</code> 降速 + hover 门控</td><td data-page-node-id="RxDrsmLMA2GIAXl8yG4RR4">无障碍 / 触控不被打扰</td></tr>
+        </tbody>
+      </table>
+    </details>
+  </section>
+</div>
+
+<!-- 弹层 -->
+<div class="overlay open" id="overlay" aria-hidden="false" data-page-node-id="TN8crGEgvxEXCbiIyR5kT0">
+  <div class="scrim" id="scrim" data-page-node-id="zYaZauOZANt6unGlFLjM7t"></div>
+  <section class="book" id="book" role="dialog" aria-modal="true" aria-label="用量概览" data-page-node-id="4KnFVPbY4mlLmfOZuIA68F">
+    <button class="close" id="close" aria-label="关闭" data-page-node-id="ddJWwkaH4BPHDqnEeuUj9X">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" data-page-node-id="M3YZHO71C4WJ5eVd2EF9E4"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" data-page-node-id="J5yGKqmcP8IEusMY8eZRM3"></path></svg>
+    </button>
+    <div class="book-inner" data-page-node-id="MBV6cPbG7VftRIEcDKP7l7">
+      <div class="mast" data-page-node-id="QGkzRAxlCo7uAd4mL9Orrt">
+        <h1 data-page-node-id="FBVmuHHYQo4EopLcPijRkA">用量概览</h1>
+        <div class="mast-sub" data-page-node-id="liToUGz0ObuxpQHghdQEVY">
+          <div data-page-node-id="0jrhtVNfOp38HyUFl6aHSu"></div>
+          
+        </div>
+      </div>
+
+      <div class="metrics" data-page-node-id="XDh9GlsxDbmLXbTr9I8FLV">
+        <div class="card" data-page-node-id="J0GEPwnkvVfS0vtplh6R5P">
+          <div class="card-k" data-page-node-id="jiKDyj4CcCuVUmGvTYb7o8">累计使用金额</div>
+          <div class="card-v" data-page-node-id="P9Fv58ZZNS0weUdv0jjS9I">¥156.63<small data-page-node-id="GKSDVFGpOSbIfoAgVgC9Pi">CNY</small></div>
+        </div>
+        <div class="card" data-page-node-id="usvGNACFVl8uozq6zst1lc">
+          <div class="card-k" data-page-node-id="SyRKdqcZbnPpJdqnTRcy8k">累计使用 TOKEN</div>
+          <div class="card-v" data-page-node-id="aMJ43EiYUXqDWQRWpSIxyy">1,399,621,931</div>
+        </div>
+        <div class="card card--sum" data-page-node-id="9MtosWRge7nR4LSf4pxOKV">
+          <div class="card-k" data-page-node-id="SEVyoFlZim57a3CCJAUf61">总余额</div>
+          <div class="card-v" data-page-node-id="7EKHrH3ZTyVm0v4FE8m6Sg">¥43.36<small data-page-node-id="kU3LzAYDidcEthTBEKja7m">CNY</small></div>
+          <a class="btn btn-primary card-cta" href="https://platform.deepseek.com/top_up" target="_blank" rel="noopener" data-page-node-id="tSA8xVfyS8pP22gShTalff">去充值</a>
+        </div>
+      </div>
+
+      <div class="trend" data-page-node-id="X2DbtXRZyDr2ItfjItbCx1">
+        <div class="trend-head" data-page-node-id="IyhYbTaAnocs2O0JFij1oP">
+          <span class="trend-t" data-page-node-id="F9baDbTYGRiLFWHDUFeJ7P">每日趋势</span>
+          <span class="segmented" id="segmented" data-page-node-id="dRTvLnJhE8Jq3DIE9FErDm">
+            <span class="thumb" id="thumb" data-page-node-id="FMvGoi004PsEF8fJqFzNWH" style="width: 46px; transform: translateX(0px);"></span>
+            <button type="button" class="is-on" data-metric="cost" data-page-node-id="H5a9DICWRx05GCK34Tr8ZA">金额</button>
+            <button type="button" data-metric="tokens" data-page-node-id="AUQPNTHSKI3XhEY1sXOUUw">TOKEN</button>
+            <button type="button" data-metric="calls" data-page-node-id="kSzHz3YCHkxXp0I5XMME5h">调用次数</button>
+          </span>
+          <span class="trend-s" id="trend-note" data-page-node-id="5fmGTcg7GbLfLB5TRZL9bd">09/21 11:56</span>
+        </div>
+        <div class="plot" id="plot" data-page-node-id="JQd2VcTxf4nShGVafEmEYC"><div class="bar show" title="2026-09-01 · ¥0.95" style="height: 28.2286px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-02 · ¥1.28" style="height: 38.0343px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-03 · ¥1.57" style="height: 46.6514px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-04 · ¥1.79" style="height: 53.1886px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-05 · ¥1.94" style="height: 57.6457px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-06 · ¥2.00" style="height: 59.4286px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-07 · ¥0.00" style="height: 2px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-08 · ¥1.85" style="height: 54.9714px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-09 · ¥1.65" style="height: 49.0286px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-10 · ¥1.39" style="height: 41.3029px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-11 · ¥1.07" style="height: 31.7943px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-12 · ¥0.73" style="height: 21.6914px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-13 · ¥0.37" style="height: 10.9943px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-14 · ¥0.00" style="height: 2px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-15 · ¥2.67" style="height: 79.3371px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-16 · ¥-0.52" style="height: 2px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-17 · ¥-0.70" style="height: 2px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-18 · ¥-0.79" style="height: 2px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-19 · ¥-0.79" style="height: 2px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-20 · ¥3.50" style="height: 104px; transition-delay: 0ms;"></div><div class="bar show" title="2026-09-21 · ¥0.00" style="height: 2px; transition-delay: 0ms;"></div></div>
+        <div class="axis" id="axis" data-page-node-id="DbxyGrmGHPWWxDVBL5rB0O"><span>1</span><span>11</span><span>21</span></div>
+        <div class="stat-row" data-page-node-id="VZqyqv6DT3Ky3E1wSaCQoR">
+          <div class="stat" data-page-node-id="q8bnGRjxPyXe1ZHmNopn04"><div class="stat-k" data-page-node-id="Xl31EvOUWyiSNBedx7Ey3e">本月消费</div><div class="stat-v" id="stat-cost" data-page-node-id="Z76ikSTJE5JCMYcgQhiO2G">¥19.96<small>CNY</small></div></div>
+          <div class="stat" data-page-node-id="788ECtwVl1Og1ZugofDowW"><div class="stat-k" data-page-node-id="Zr0VQd5PtdnM9DAhvR5v2T">本月 TOKEN</div><div class="stat-v" id="stat-tokens" data-page-node-id="Gk7dG4W15tVWjEtJUcLH61">0.48M</div></div>
+          <div class="stat" data-page-node-id="aH2lqVe8TVMDwrZIapakMD"><div class="stat-k" data-page-node-id="CZ5qHrgwtbYQxl4g5IuChf">本月调用</div><div class="stat-v" id="stat-calls" data-page-node-id="Y6h24DpSrFEno9BunT13xk">658</div></div>
+        </div>
+      </div>
+
+      <div class="models" data-page-node-id="VCBOOuLmBFEu8pUP1eRPWf">
+        <div class="trend-head" data-page-node-id="R6kxQbRkSsBuhfupPjd0MU"><span class="trend-t" data-page-node-id="IBIs7FJe7sQ9Er5CAwUesi">可用模型</span></div>
+        <div class="models-list" data-page-node-id="8nKKzhxzKbOhAq3ERho4ix">
+          <span class="chip on" data-page-node-id="5ttTxhv1r6i7bqFhaFpxui">deepseek-flash</span>
+          <span class="chip" data-page-node-id="1GyD2GmSVrUpV3zDCEc6TN">deepseek-v4-pro</span>
+        </div>
+      </div>
+
+      <div class="connect" data-page-node-id="4NhVazfgzvldlg2uleBNla">
+        <span class="stamp" data-page-node-id="ZaHV7kfzYk9hUETc8RPOGN"><i data-page-node-id="5B8JF2VqLlOOzNQ0HrFYEH"></i>已连接 · 09/21 11:56</span>
+        <div class="form" data-page-node-id="GybJ8XC6Loi574QAdGGGKZ">
+          <button class="btn btn-ghost" type="button" data-page-node-id="pFg6Ku5aH6NhsHZEFCqrCm">重新读取</button>
+          <button class="btn btn-go" type="button" data-page-node-id="4kbMt15G45Df1i4u5l0tUB">断开</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const days = () => {
+    const now = new Date();
+    const count = now.getDate();
+    const rows = [];
+    for (let day = 1; day <= count; day += 1) {
+      const wave = Math.sin((day / count) * Math.PI * 1.7);
+      const spike = day === count - 1 ? 1 : day === count - 6 ? 0.7 : 0;
+      const cost = day % 7 === 0 ? 0 : Number((0.6 + wave * 1.4 + spike * 4.2).toFixed(2));
+      rows.push({
+        day,
+        cost,
+        tokens: cost === 0 ? 0 : Math.round(cost * 19000 + (day % 5) * 3000),
+        calls: cost === 0 ? 0 : Math.round(8 + cost * 22 + (day % 3) * 4),
+      });
+    }
+    return rows;
+  };
+
+  const ROWS = days();
+  const METRICS = {
+    cost: { pick: (r) => r.cost, format: (v) => '¥' + v.toFixed(2), total: '¥' + ROWS.reduce((s, r) => s + r.cost, 0).toFixed(2) },
+    tokens: { pick: (r) => r.tokens, format: (v) => (v >= 1e6 ? (v / 1e6).toFixed(2) + 'M' : Math.round(v / 1000) + 'k'), total: (ROWS.reduce((s, r) => s + r.tokens, 0) / 1e6).toFixed(2) + 'M' },
+    calls: { pick: (r) => r.calls, format: (v) => String(Math.round(v)), total: ROWS.reduce((s, r) => s + r.calls, 0).toLocaleString('zh-CN') },
+  };
+
+  const plot = document.getElementById('plot');
+  const axis = document.getElementById('axis');
+  const thumb = document.getElementById('thumb');
+  const segmented = document.getElementById('segmented');
+  const note = document.getElementById('trend-note');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function moveThumb() {
+    const active = segmented.querySelector('button.is-on');
+    thumb.style.width = active.offsetWidth + 'px';
+    thumb.style.transform = `translateX(${active.offsetLeft - 2}px)`;
+  }
+
+  function paint(metricId, animate) {
+    const metric = METRICS[metricId];
+    const peak = ROWS.reduce((m, r) => Math.max(m, metric.pick(r)), 0);
+    const baseH = 104;
+    plot.replaceChildren();
+    ROWS.forEach((row, i) => {
+      const v = metric.pick(row);
+      const h = peak === 0 ? 0 : Math.max(2, (v / peak) * baseH);
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      bar.style.height = h + 'px';
+      bar.style.transitionDelay = (!reduce && animate) ? Math.min(i * 10, 280) + 'ms' : '0ms';
+      bar.title = `2026-09-${String(row.day).padStart(2, '0')} · ${metric.format(v)}`;
+      plot.appendChild(bar);
+      requestAnimationFrame(() => requestAnimationFrame(() => bar.classList.add('show')));
+    });
+    axis.replaceChildren();
+    for (const day of [1, Math.round(ROWS.length / 2), ROWS.length]) {
+      const s = document.createElement('span');
+      s.textContent = String(day);
+      axis.appendChild(s);
+    }
+    note.textContent = '09/21 11:56';
+    document.getElementById('stat-cost').innerHTML = METRICS.cost.total + '<small>CNY</small>';
+    document.getElementById('stat-tokens').innerHTML = METRICS.tokens.total;
+    document.getElementById('stat-calls').innerHTML = METRICS.calls.total;
+  }
+
+  segmented.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-metric]');
+    if (!btn) return;
+    for (const o of segmented.querySelectorAll('button')) o.classList.toggle('is-on', o === btn);
+    moveThumb();
+    paint(btn.dataset.metric, true);
+  });
+
+  const overlay = document.getElementById('overlay');
+  const book = document.getElementById('book');
+  let current = 'cost';
+
+  function open() {
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    moveThumb();
+    paint(current, true);
+  }
+  function close() {
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+  }
+  document.getElementById('seat').addEventListener('click', open);
+  document.getElementById('seat').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+  document.getElementById('close').addEventListener('click', close);
+  document.getElementById('scrim').addEventListener('click', close);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.classList.contains('open')) close(); });
+
+  const themeBtn = document.getElementById('t-theme');
+  themeBtn.addEventListener('click', () => {
+    const dark = document.body.hasAttribute('data-theme');
+    document.body.toggleAttribute('data-theme', !dark);
+    themeBtn.setAttribute('aria-pressed', String(!dark));
+  });
+  document.getElementById('t-replay').addEventListener('click', () => {
+    if (overlay.classList.contains('open')) close();
+    void book.offsetWidth;
+    open();
+  });
+
+  window.addEventListener('resize', moveThumb);
+  moveThumb();
+})();
+</script>
+
+
+
+</body></html>
