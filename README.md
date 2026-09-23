@@ -19,10 +19,20 @@ DeepSeek Harness（dsh）插件：侧边栏显示当前模型与账户余额，�
 
 ## 安装
 
-要求 Node ≥ 20。
+要求 Node ≥ 20。尚未发布到 npm，通过 GitHub 安装：
 
 ```powershell
-dsh plugin --profile web add dsh-plugin-usageledger   # 或传本地目录路径（开发模式）
+# 从 GitHub 仓库直接安装（任选一种）
+dsh plugin --profile web add github:zhwhuang/dsh-web-cost
+dsh plugin --profile web add https://github.com/zhwhuang/dsh-web-cost.git
+dsh plugin --profile web add https://github.com/zhwhuang/dsh-web-cost/archive/refs/tags/v0.1.0.zip
+
+# 安装指定版本（tarball 附件见 GitHub Releases）
+dsh plugin --profile web add https://github.com/zhwhuang/dsh-web-cost/releases/download/v0.1.0/dsh-plugin-usageledger-0.1.0.tgz
+
+# 或传本地目录路径（开发模式）
+dsh plugin --profile web add "D:\WorkFolder\Project\DeepseekHarnessPlugins\dsh-plugin-usageledger"
+
 dsh web
 ```
 
