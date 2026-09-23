@@ -14,7 +14,7 @@ const clientBundle = await readFile(new URL('lib/client.js', root), 'utf8');
 const hostBundle = await readFile(new URL('lib/index.js', root), 'utf8');
 
 test('the manifest declares one host entry and one browser entry', () => {
-  assert.equal(manifest.name, 'dsh-plugin-apicost');
+  assert.equal(manifest.name, 'dsh-plugin-usageledger');
   assert.equal(manifest.type, 'module');
   assert.equal(manifest.main, 'lib/index.js');
   assert.equal(manifest.exports['.'].default, './lib/index.js');
@@ -30,7 +30,7 @@ test('the manifest declares one host entry and one browser entry', () => {
 });
 
 test('the bundle patch mounts the plugin with the documented defaults', () => {
-  assert.match(patch, /id: apicost/u);
+  assert.match(patch, /id: usageledger/u);
   assert.ok(patch.includes(`name: '${manifest.name}'`), 'the patch names the package it mounts');
   for (const key of ['apiKeyEnv: DEEPSEEK_API_KEY', 'consoleTokenEnv: DEEPSEEK_PLATFORM_TOKEN', 'trackProviders:', 'api:', 'platform:']) {
     assert.ok(patch.includes(key), `missing patch key ${key}`);
@@ -41,7 +41,7 @@ test('the bundle patch mounts the plugin with the documented defaults', () => {
 
 test('the plugin owns no state file and ships no accumulator', () => {
   assert.equal(/stateDir|historyDays|persistDebounceMs/u.test(JSON.stringify(manifest)), false, 'no persistence settings remain');
-  assert.equal(/stateDir|apicost-state/u.test(patch), false, 'the patch no longer mentions a state directory');
+  assert.equal(/stateDir|usageledger-state/u.test(patch), false, 'the patch no longer mentions a state directory');
   assert.equal(/writeFile|mkdir|createWriteStream|node:fs|node:path/u.test(hostBundle), false, 'the host imports no filesystem writer');
   assert.ok(hostBundle.includes("ctx.on?.('llm/stream'"), 'the only harness event it observes is the stream, for the model label');
   assert.ok(hostBundle.includes("ctx.on?.('llm/stream', trackStream, { global: true })"), 'and it must be a global waterfall hook');
@@ -77,7 +77,7 @@ test('the session source reads the harness meter without joining the dependency 
 });
 
 test('the browser half talks only to the plugin routes', () => {
-  for (const path of ['/api/apicost/snapshot', '/api/apicost/events', '/api/apicost/refresh', '/api/apicost/console-token']) {
+  for (const path of ['/api/usageledger/snapshot', '/api/usageledger/events', '/api/usageledger/refresh', '/api/usageledger/console-token']) {
     assert.ok(clientBundle.includes(path), `missing client path ${path}`);
   }
   assert.equal(clientBundle.includes('sk-'), true, 'the copy warns about API keys, but the bundle never holds one');

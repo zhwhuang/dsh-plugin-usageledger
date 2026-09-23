@@ -1,5 +1,5 @@
 /**
- * Test doubles for the APICost host half.
+ * Test doubles for the UsageLedger host half.
  *
  * Lives outside `test/` so the Node test runner does not execute it as a test
  * file of its own.
@@ -261,7 +261,7 @@ const tempDirs = new Set();
 let tempSweepRegistered = false;
 
 /** @returns {Promise<string>} a fresh temporary directory. */
-export async function createTempDir(prefix = 'apicost-test-') {
+export async function createTempDir(prefix = 'usageledger-test-') {
   const dir = await mkdtemp(join(tmpdir(), prefix));
   tempDirs.add(dir);
   if (!tempSweepRegistered) {

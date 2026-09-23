@@ -180,9 +180,9 @@ test('the snapshot carries the session block beside, never inside, the console b
   try {
     apply(harness.ctx, { api: { intervalMs: 3600000, minRefreshMs: 0 }, platform: { intervalMs: 3600000, minRefreshMs: 0 }, heartbeatMs: 60000 });
     await delay(30);
-    const handler = routeOf(harness, '/api/apicost/snapshot').handler;
+    const handler = routeOf(harness, '/api/usageledger/snapshot').handler;
     const res = createFakeResponse();
-    await handler(createFakeRequest({ method: 'GET', url: '/api/apicost/snapshot' }), res);
+    await handler(createFakeRequest({ method: 'GET', url: '/api/usageledger/snapshot' }), res);
     const { snapshot } = jsonOf(res);
 
     assert.equal(snapshot.console.usage, null, 'the console is still empty without a token');
@@ -234,15 +234,15 @@ test('an unchanged projection does not bump the revision', async () => {
   try {
     apply(harness.ctx, { api: { intervalMs: 3600000, minRefreshMs: 0, enabled: false }, platform: { intervalMs: 3600000, minRefreshMs: 0, enabled: false }, heartbeatMs: 60000 });
     await delay(20);
-    const handler = routeOf(harness, '/api/apicost/snapshot').handler;
+    const handler = routeOf(harness, '/api/usageledger/snapshot').handler;
     const first = createFakeResponse();
-    await handler(createFakeRequest({ method: 'GET', url: '/api/apicost/snapshot' }), first);
+    await handler(createFakeRequest({ method: 'GET', url: '/api/usageledger/snapshot' }), first);
     const revision = jsonOf(first).snapshot.revision;
 
     // The interval timer re-reads the same value several times over this window.
     await delay(60);
     const second = createFakeResponse();
-    await handler(createFakeRequest({ method: 'GET', url: '/api/apicost/snapshot' }), second);
+    await handler(createFakeRequest({ method: 'GET', url: '/api/usageledger/snapshot' }), second);
     const after = jsonOf(second).snapshot;
     assert.equal(after.revision, revision, 'an identical reading must not publish');
     assert.equal(after.session.usage.totalTokens, 47340);

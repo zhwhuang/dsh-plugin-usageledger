@@ -1,5 +1,5 @@
 /**
- * Browser half of dsh-plugin-apicost.
+ * Browser half of dsh-plugin-usageledger.
  *
  * Shipped as a harness client bundle (`window.__ModuleLoader__.load`), so this
  * module has no importable runtime exports; the declarations describe the
@@ -19,4 +19,4 @@ export declare function apply(ctx: { slots: { inject(name: string, callback: () 
 export declare function SidebarCostWidget(props: { wide?: boolean; cost: unknown }): unknown;
 
 /** The frame-wide detail panel; renders nothing while the store's `open` flag is false. */
-export declare function ApiCostOverlay(props: { cost: unknown }): unknown;
+export declare function UsageLedgerOverlay(props: { cost: unknown }): unknown;

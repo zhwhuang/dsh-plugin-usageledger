@@ -1,6 +1,6 @@
-# dsh-plugin-apicost bundle patch.
+# dsh-plugin-usageledger bundle patch.
 #
-# Mounts the APICost host half into a dsh profile's composition. The host half is
+# Mounts the UsageLedger host half into a dsh profile's composition. The host half is
 # a read-only view over DeepSeek's own APIs — it keeps no accounting of its own
 # and writes nothing to disk:
 #
@@ -24,10 +24,10 @@
 # row below. Every field of `config` is optional — the values shown are the
 # plugin's own defaults.
 - insert:
-    - id: apicost
+    - id: usageledger
       # Node-resolvable package name — must stay in sync with package.json
       # `name`. Quoted because `@`/`-` lead-ins are YAML-sensitive.
-      name: 'dsh-plugin-apicost'
+      name: 'dsh-plugin-usageledger'
       config:
         # Credential references (environment-variable names) resolved per
         # operation through ctx.credentials, then the process environment. The

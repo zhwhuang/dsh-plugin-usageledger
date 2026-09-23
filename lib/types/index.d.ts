@@ -1,5 +1,5 @@
 /**
- * Host half of dsh-plugin-apicost.
+ * Host half of dsh-plugin-usageledger.
  *
  * The declarations are structural on purpose: an out-of-tree plugin installed
  * into a dsh profile cannot resolve the harness's own packages for type
@@ -107,14 +107,14 @@ export interface Snapshot {
 }
 
 /** Plugin name shown by the loader. */
-export declare const name: 'apicost';
+export declare const name: 'usageledger';
 
 /** No required cordis services. */
 export declare const inject: string[];
 
 /**
  * Mount the host half: read the balance and model list from the open API, read
- * the account's usage from the platform console, and serve `/api/apicost/*`.
+ * the account's usage from the platform console, and serve `/api/usageledger/*`.
  * Nothing is written to disk.
  */
 export declare function apply(ctx: HostContext, config?: Config): void;

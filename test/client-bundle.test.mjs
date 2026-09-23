@@ -295,7 +295,7 @@ function fakeCost(overrides = {}) {
 
 test('bundle registers under the package id and resolves only `react`', async () => {
   const { registration, exportsObject, requested } = await loadBundle();
-  assert.equal(registration.id, 'dsh-plugin-apicost');
+  assert.equal(registration.id, 'dsh-plugin-usageledger');
   assert.equal(typeof registration.factory, 'function');
   assert.deepEqual(requested, ['react'], 'no module outside the platform baseline is requested');
   assert.equal(typeof exportsObject.apply, 'function');
@@ -329,7 +329,7 @@ test('the sidebar seat shows the model in use and the balance', async () => {
 
 test('the detail window leads with balance and the account totals', async () => {
   const { exportsObject } = await loadBundle('../lib/client.js?book');
-  const rendered = exportsObject.ApiCostOverlay({ cost: fakeCost({ open: true }) });
+  const rendered = exportsObject.UsageLedgerOverlay({ cost: fakeCost({ open: true }) });
   const text = textOf(rendered);
 
   assert.ok(text.includes('用量概览'), 'the overview title');
@@ -348,7 +348,7 @@ test('the detail window leads with balance and the account totals', async () => 
 
 test('the trend switches between cost, tokens and calls over the same days', async () => {
   const { exportsObject } = await loadBundle('../lib/client.js?trend');
-  const Overlay = exportsObject.ApiCostOverlay;
+  const Overlay = exportsObject.UsageLedgerOverlay;
 
   const cost = Overlay({ cost: fakeCost({ open: true }) });
   const bars = findByClass(cost, 'apx-bar');
@@ -378,7 +378,7 @@ test('the console card asks for a token when none is configured', async () => {
     console: { ...SNAPSHOT.console, usage: null, error: { code: 'NO_CONSOLE_TOKEN', message: 'credential DEEPSEEK_PLATFORM_TOKEN is not configured' } },
     credentials: { ...SNAPSHOT.credentials, consoleToken: { configured: false, source: null, writable: true, ref: 'DEEPSEEK_PLATFORM_TOKEN' } },
   };
-  const rendered = exportsObject.ApiCostOverlay({ cost: fakeCost({ open: true, data: offline }) });
+  const rendered = exportsObject.UsageLedgerOverlay({ cost: fakeCost({ open: true, data: offline }) });
   const text = textOf(rendered);
 
   assert.ok(text.includes('平台控制台未连接'), 'the state is named');
@@ -395,7 +395,7 @@ test('a connected console adds no card of its own', async () => {
   // actions, so a connected console renders nothing extra: repeating the status
   // and two of the same buttons lower down is noise, not information.
   const { exportsObject } = await loadBundle('../lib/client.js?console-on');
-  const rendered = exportsObject.ApiCostOverlay({ cost: fakeCost({ open: true }) });
+  const rendered = exportsObject.UsageLedgerOverlay({ cost: fakeCost({ open: true }) });
   const text = textOf(rendered);
 
   assert.equal(findByClass(rendered, 'apx-connect').length, 0, 'no connection card when it is connected');
@@ -408,7 +408,7 @@ test('a connected console adds no card of its own', async () => {
     console: { ...SNAPSHOT.console, usage: null, error: { code: 'EXPIRED', message: 'session expired' } },
     credentials: { ...SNAPSHOT.credentials, consoleToken: { ...SNAPSHOT.credentials.consoleToken, configured: true } },
   };
-  const withError = exportsObject.ApiCostOverlay({ cost: fakeCost({ open: true, data: broken }) });
+  const withError = exportsObject.UsageLedgerOverlay({ cost: fakeCost({ open: true, data: broken }) });
   assert.equal(findByClass(withError, 'apx-connect').length, 1, 'a broken connection still gets a card');
   assert.ok(textOf(withError).includes('登录态已失效'), 'and it says so in Chinese rather than showing only a code');
 });
@@ -461,7 +461,7 @@ test('the one-click read is hidden, not broken, when the console is another orig
     location: { origin: 'http://127.0.0.1:8080' },
     localStorage: fakeStorage({ userToken: JSON.stringify({ value: OPAQUE_TOKEN }) }),
   });
-  const rendered = exportsObject.ApiCostOverlay({ cost: fakeCost({ open: true, data: disconnectedSnapshot() }) });
+  const rendered = exportsObject.UsageLedgerOverlay({ cost: fakeCost({ open: true, data: disconnectedSnapshot() }) });
 
   assert.equal(findByClass(rendered, 'apx-auto').length, 0, 'no auto-read affordance off-origin');
   assert.equal(findByClass(rendered, 'apx-input')[0].props.type, 'password', 'the manual paste remains');
@@ -492,7 +492,7 @@ test('a same-origin console offers the read and stores the token it finds', asyn
   };
 
   try {
-    const rendered = loaded.exportsObject.ApiCostOverlay({ cost });
+    const rendered = loaded.exportsObject.UsageLedgerOverlay({ cost });
     const auto = findByClass(rendered, 'apx-auto');
     assert.equal(auto.length, 1, 'the one-click read is offered on the console origin');
 
@@ -502,7 +502,7 @@ test('a same-origin console offers the read and stores the token it finds', asyn
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     assert.equal(saved.length, 1, 'the token was posted once');
-    assert.ok(saved[0].url.endsWith('/api/apicost/console-token'), 'to the console-token route');
+    assert.ok(saved[0].url.endsWith('/api/usageledger/console-token'), 'to the console-token route');
     assert.equal(saved[0].body.token, OPAQUE_TOKEN, 'the envelope was unwrapped to the bare token');
   } finally {
     globalThis.fetch = originalFetch;
@@ -522,14 +522,14 @@ test('a same-origin read with no stored token explains the miss instead of posti
   };
 
   try {
-    const first = loaded.exportsObject.ApiCostOverlay({ cost: fakeCost({ open: true, data: disconnectedSnapshot() }) });
+    const first = loaded.exportsObject.UsageLedgerOverlay({ cost: fakeCost({ open: true, data: disconnectedSnapshot() }) });
     const button = elementsOfType(findByClass(first, 'apx-auto')[0], 'button')[0];
     await button.props.onClick();
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     assert.equal(saved.length, 0, 'nothing is posted when no token was found');
     // The notice lives in component state, so read the tree after a re-render.
-    const second = loaded.exportsObject.ApiCostOverlay({ cost: fakeCost({ open: true, data: disconnectedSnapshot() }) });
+    const second = loaded.exportsObject.UsageLedgerOverlay({ cost: fakeCost({ open: true, data: disconnectedSnapshot() }) });
     assert.ok(textOf(second).includes('没读到令牌'), 'the miss is explained');
   } finally {
     globalThis.fetch = originalFetch;
@@ -543,7 +543,7 @@ test('an API-key failure is surfaced and the balance degrades to a dash', async 
     api: { ...SNAPSHOT.api, error: { code: 'NO_API_KEY', message: 'credential DEEPSEEK_API_KEY is not configured' }, preferred: null },
     credentials: { ...SNAPSHOT.credentials, apiKey: { configured: false, source: null, writable: true, ref: 'DEEPSEEK_API_KEY' } },
   };
-  const text = textOf(exportsObject.ApiCostOverlay({ cost: fakeCost({ open: true, data: failing }) }));
+  const text = textOf(exportsObject.UsageLedgerOverlay({ cost: fakeCost({ open: true, data: failing }) }));
   assert.ok(text.includes('未找到 API Key 凭据'), 'the missing credential is named');
   assert.ok(text.includes('用量概览'), 'the window still opens');
 });
@@ -552,7 +552,7 @@ test('the window is a modal that closes on Escape and on the close button', asyn
   const { exportsObject } = await loadBundle('../lib/client.js?modal');
   const opened = [];
   const cost = { ...fakeCost({ open: true }), setOpen: (value) => opened.push(value) };
-  const rendered = exportsObject.ApiCostOverlay({ cost });
+  const rendered = exportsObject.UsageLedgerOverlay({ cost });
 
   assert.equal(findByClass(rendered, 'apx-ovl').length, 1, 'a frame-wide overlay');
   assert.equal(findByClass(rendered, 'apx-scrim').length, 1, 'a scrim behind the book');
@@ -564,13 +564,13 @@ test('the window is a modal that closes on Escape and on the close button', asyn
   rendered.props.onKeyDown({ key: 'Escape' });
   findByClass(rendered, 'apx-close')[0].props.onClick();
   assert.deepEqual(opened, [false, false], 'both routes close it');
-  assert.equal(exportsObject.ApiCostOverlay({ cost: fakeCost({ open: false }) }), null, 'a closed window renders nothing');
+  assert.equal(exportsObject.UsageLedgerOverlay({ cost: fakeCost({ open: false }) }), null, 'a closed window renders nothing');
 });
 
 test('the session block reports the harness count and names its different basis', async () => {
   const { exportsObject } = await loadBundle('../lib/client.js?session-on');
   const withSession = { ...SNAPSHOT, session: SESSION };
-  const rendered = exportsObject.ApiCostOverlay({ cost: fakeCost({ open: true, data: withSession }) });
+  const rendered = exportsObject.UsageLedgerOverlay({ cost: fakeCost({ open: true, data: withSession }) });
   const text = textOf(rendered);
 
   for (const label of ['本次会话', '计费输入', '输出', '合计', '缓存命中', '命中率']) {
@@ -593,23 +593,23 @@ test('the session block explains an absent measurement instead of showing a zero
   const { exportsObject } = await loadBundle('../lib/client.js?session-off');
 
   const none = { ...SNAPSHOT, session: { available: false, reason: 'NO_SESSION', sessionId: null, sessions: 0, usage: null, context: null } };
-  const noSession = textOf(exportsObject.ApiCostOverlay({ cost: fakeCost({ open: true, data: none }) }));
+  const noSession = textOf(exportsObject.UsageLedgerOverlay({ cost: fakeCost({ open: true, data: none }) }));
   assert.ok(noSession.includes('还没有活跃会话'), 'a missing session is named');
 
   const unmeasured = { ...SNAPSHOT, session: { available: false, reason: 'NOT_MEASURED', sessionId: 'session-1', sessions: 1, usage: null, context: null } };
-  const text = textOf(exportsObject.ApiCostOverlay({ cost: fakeCost({ open: true, data: unmeasured }) }));
+  const text = textOf(exportsObject.UsageLedgerOverlay({ cost: fakeCost({ open: true, data: unmeasured }) }));
   assert.ok(text.includes('尚无用量记录'), 'an unmeasured session says so');
   assert.ok(text.includes('—') === false || true, 'no fabricated figure is required');
 
   // The block still renders when the host is too old to send one at all.
-  const missing = textOf(exportsObject.ApiCostOverlay({ cost: fakeCost({ open: true, data: SNAPSHOT }) }));
+  const missing = textOf(exportsObject.UsageLedgerOverlay({ cost: fakeCost({ open: true, data: SNAPSHOT }) }));
   assert.ok(missing.includes('本次会话'), 'the block is present even without a session payload');
 });
 
 test('several live sessions say which one was counted', async () => {
   const { exportsObject } = await loadBundle('../lib/client.js?session-many');
   const many = { ...SNAPSHOT, session: { ...SESSION, sessions: 4 } };
-  const text = textOf(exportsObject.ApiCostOverlay({ cost: fakeCost({ open: true, data: many }) }));
+  const text = textOf(exportsObject.UsageLedgerOverlay({ cost: fakeCost({ open: true, data: many }) }));
   assert.ok(text.includes('4'), 'the count of live sessions is shown');
 });
 
@@ -620,7 +620,7 @@ test('the Chinese locale labels every surface in Chinese', async () => {
   let overlay;
   try {
     const { exportsObject } = await loadBundle('../lib/client.js?zh');
-    overlay = exportsObject.ApiCostOverlay({ cost: fakeCost({ open: true, data: { ...SNAPSHOT, session: SESSION } }) });
+    overlay = exportsObject.UsageLedgerOverlay({ cost: fakeCost({ open: true, data: { ...SNAPSHOT, session: SESSION } }) });
     rendered = textOf(overlay);
   } finally {
     if (original === undefined) delete globalThis.navigator;
@@ -648,7 +648,7 @@ test('the Chinese locale labels every surface in Chinese', async () => {
 
 test('the title bar carries the connection state and the window actions', async () => {
   const { exportsObject } = await loadBundle('../lib/client.js?mast');
-  const rendered = exportsObject.ApiCostOverlay({ cost: fakeCost({ open: true }) });
+  const rendered = exportsObject.UsageLedgerOverlay({ cost: fakeCost({ open: true }) });
   const text = textOf(rendered);
 
   const bars = findByClass(rendered, 'apx-mast-bar');
@@ -692,7 +692,7 @@ test('the title bar reserves the close button a lane so nothing overlaps it', as
 test('the model list refreshes on its own without marking the panel busy', async () => {
   const { exportsObject } = await loadBundle('../lib/client.js?modrefresh');
   const cost = fakeCost({ open: true, modelsPending: false });
-  const rendered = exportsObject.ApiCostOverlay({ cost });
+  const rendered = exportsObject.UsageLedgerOverlay({ cost });
   const text = textOf(rendered);
 
   assert.ok(text.includes('模型列表'), 'the section is titled 模型列表');
@@ -709,7 +709,7 @@ test('the model list refreshes on its own without marking the panel busy', async
 
 test('the model-list button reports its own pending state', async () => {
   const { exportsObject } = await loadBundle('../lib/client.js?modpending');
-  const rendered = exportsObject.ApiCostOverlay({ cost: fakeCost({ open: true, modelsPending: true }) });
+  const rendered = exportsObject.UsageLedgerOverlay({ cost: fakeCost({ open: true, modelsPending: true }) });
   const buttons = findByClass(rendered, 'apx-icon-btn');
 
   assert.equal(buttons[0].props.disabled, true, 'a second press cannot stack a request');
@@ -724,7 +724,7 @@ test('a credential error turns its pill red instead of claiming a connection', a
     api: { ...SNAPSHOT.api, error: { code: 'UNAUTHORIZED', message: 'Authentication Fails' }, preferred: null, balance: null },
     credentials: { ...SNAPSHOT.credentials, apiKey: { ...SNAPSHOT.credentials.apiKey, configured: true } },
   };
-  const rendered = exportsObject.ApiCostOverlay({ cost: fakeCost({ open: true, data: broken }) });
+  const rendered = exportsObject.UsageLedgerOverlay({ cost: fakeCost({ open: true, data: broken }) });
   const pills = findByClass(rendered, 'apx-pill');
 
   const apiPill = pills.find((pill) => textOf(pill).includes('API'));
