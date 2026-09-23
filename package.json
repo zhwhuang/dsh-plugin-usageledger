@@ -1,7 +1,7 @@
 {
 	"name": "dsh-plugin-usageledger",
-	"version": "0.1.0",
-	"description": "UsageLedger for DeepSeek Harness: 在侧边栏显示当前模型与 DeepSeek 账户余额，点开是一页用量账簿（总余额、累计使用金额、累计 TOKEN、每日金额/TOKEN/调用次数趋势、充值入口）。数据全部来自 DeepSeek 官方接口。",
+	"version": "0.2.0",
+	"description": "UsageLedger: 在侧边栏显示当前模型与各平台账户余额，点开是一页用量账簿（每平台动态账单卡、累计使用金额、累计 TOKEN、每日趋势）。平台卡由 Harness 模型页的提供方自动发现生成，支持 DeepSeek、Kimi、GLM、Qwen 及自定义 OpenAI 兼容网关。",
 	"type": "module",
 	"main": "lib/index.js",
 	"types": "lib/types/index.d.ts",

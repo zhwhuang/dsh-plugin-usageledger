@@ -56,7 +56,12 @@ test('the browser bundle carries the v9 Apple compact design and no external ass
   }
   assert.ok(clientBundle.includes('body[data-ds-dark-theme] .apx'), 'the dark mapping keys off the product attribute');
   assert.ok(clientBundle.includes('prefers-reduced-motion'), 'motion must be optional');
-  assert.ok(clientBundle.includes('document.createElement("style")'), 'the bundle injects its own stylesheet');
+  // Quote-style agnostic: a formatter may flip the literal's quotes, and the
+  // contract is "the bundle injects its own stylesheet", not its spelling.
+  assert.ok(
+    /document\.createElement\((["'])style\1\)/u.test(clientBundle),
+    'the bundle injects its own stylesheet'
+  );
   const urls = clientBundle.match(/https?:\/\/[a-z0-9.-]+/giu) ?? [];
   const allowed = urls.every((url) => url.startsWith('https://platform.deepseek.com') || url.startsWith('https://api.deepseek.com'));
   assert.equal(allowed, true, `unexpected external URL in the bundle: ${urls.filter((url) => !url.startsWith('https://platform.deepseek.com') && !url.startsWith('https://api.deepseek.com'))}`);

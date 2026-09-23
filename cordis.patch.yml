@@ -24,44 +24,54 @@
 # row below. Every field of `config` is optional — the values shown are the
 # plugin's own defaults.
 - insert:
-    - id: usageledger
-      # Node-resolvable package name — must stay in sync with package.json
-      # `name`. Quoted because `@`/`-` lead-ins are YAML-sensitive.
-      name: 'dsh-plugin-usageledger'
-      config:
-        # Credential references (environment-variable names) resolved per
-        # operation through ctx.credentials, then the process environment. The
-        # values never leave the host and are never written to a plugin file.
-        apiKeyEnv: DEEPSEEK_API_KEY
-        # The platform console token (a bearer JWT from a signed-in
-        # platform.deepseek.com session). Leave it unset and the panel shows the
-        # balance and model list only; paste it in the panel to store it in the
-        # harness credential store, or set it in the environment.
-        consoleTokenEnv: DEEPSEEK_PLATFORM_TOKEN
-        # Provider routes whose in-flight model the sidebar seat follows. The
-        # DeepSeek adapter registers itself as `deepseek-official`.
-        trackProviders:
-          - deepseek-official
-        # Follow every provider route, not just the ones listed above.
-        trackAllProviders: false
-        # Open API: balance and model list.
-        api:
-          enabled: true
-          # baseURL: https://api.deepseek.com
-          intervalMs: 60000
-          timeoutMs: 8000
-          # Floor between two on-demand refreshes, so a hot panel cannot spam
-          # the API.
-          minRefreshMs: 5000
-        # Platform console: all-time figures and the daily usage series.
-        platform:
-          enabled: true
-          # baseURL: https://platform.deepseek.com
-          intervalMs: 300000
-          timeoutMs: 10000
-          minRefreshMs: 30000
-        # Pin the session whose token usage the panel reports in its 「本次会话」
-        # block. Unset (the default) reports the only live session, or the newest
-        # one when several are live — and the panel then says how many it saw, so
-        # an ambiguous choice is visible rather than silent.
-        # sessionId: session-1
+      - id: usageledger
+        # Node-resolvable package name — must stay in sync with package.json
+        # `name`. Quoted because `@`/`-` lead-ins are YAML-sensitive.
+        name: 'dsh-plugin-usageledger'
+        config:
+            # Credential references (environment-variable names) resolved per
+            # operation through ctx.credentials, then the process environment. The
+            # values never leave the host and are never written to a plugin file.
+            apiKeyEnv: DEEPSEEK_API_KEY
+            # The platform console token (a bearer JWT from a signed-in
+            # platform.deepseek.com session). Leave it unset and the panel shows the
+            # balance and model list only; paste it in the panel to store it in the
+            # harness credential store, or set it in the environment.
+            consoleTokenEnv: DEEPSEEK_PLATFORM_TOKEN
+            # Provider routes whose in-flight model the sidebar seat follows. The
+            # DeepSeek adapter registers itself as `deepseek-official`.
+            trackProviders:
+                - deepseek-official
+            # Follow every provider route, not just the ones listed above.
+            trackAllProviders: false
+            # Open API: balance and model list.
+            api:
+                enabled: true
+                # baseURL: https://api.deepseek.com
+                intervalMs: 60000
+                timeoutMs: 15000
+                # Floor between two on-demand refreshes, so a hot panel cannot spam
+                # the API.
+                minRefreshMs: 5000
+            # Platform console: all-time figures and the daily usage series.
+            platform:
+                enabled: true
+                # baseURL: https://platform.deepseek.com
+                intervalMs: 300000
+                timeoutMs: 20000
+                minRefreshMs: 30000
+            # Pin the session whose token usage the panel reports in its 「本次会话」
+            # block. Unset (the default) reports the only live session, or the newest
+            # one when several are live — and the panel then says how many it saw, so
+            # an ambiguous choice is visible rather than silent.
+            # sessionId: session-1
+            # 平台账单卡是「发现驱动」的：明细窗自动跟随设置 → 模型页已配置的
+            # 提供方（deepseek-official / moonshotai / zai，以及 settings.yaml 里
+            # llm-pi-ai.providers 的自定义网关）生成卡片，无需在此配置。
+            # 下面的 providers 数组只是可选覆盖：重命名、禁用或改指向某个平台。
+            # providers:
+            #   - id: moonshot
+            #     label: Kimi
+            #     # apiKeyEnv: MOONSHOT_API_KEY
+            #     # baseURL: https://api.moonshot.cn/v1
+            #     # enabled: false
