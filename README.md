@@ -23,12 +23,12 @@ DeepSeek Harness（dsh）插件：侧边栏显示当前模型与账户余额，�
 
 ```powershell
 # 从 GitHub 仓库直接安装（任选一种）
-dsh plugin --profile web add github:zhwhuang/dsh-web-cost
-dsh plugin --profile web add https://github.com/zhwhuang/dsh-web-cost.git
-dsh plugin --profile web add https://github.com/zhwhuang/dsh-web-cost/archive/refs/tags/v0.1.0.zip
+dsh plugin --profile web add github:zhwhuang/dsh-plugin-usageledger
+dsh plugin --profile web add https://github.com/zhwhuang/dsh-plugin-usageledger.git
+dsh plugin --profile web add https://github.com/zhwhuang/dsh-plugin-usageledger/archive/refs/tags/v0.1.0.zip
 
 # 安装指定版本（tarball 附件见 GitHub Releases）
-dsh plugin --profile web add https://github.com/zhwhuang/dsh-web-cost/releases/download/v0.1.0/dsh-plugin-usageledger-0.1.0.tgz
+dsh plugin --profile web add https://github.com/zhwhuang/dsh-plugin-usageledger/releases/download/v0.1.0/dsh-plugin-usageledger-0.1.0.tgz
 
 # 或传本地目录路径（开发模式）
 dsh plugin --profile web add "D:\WorkFolder\Project\DeepseekHarnessPlugins\dsh-plugin-usageledger"

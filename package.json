@@ -31,12 +31,12 @@
 	"author": "zhwhuang",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/zhwhuang/dsh-web-cost.git"
+		"url": "git+https://github.com/zhwhuang/dsh-plugin-usageledger.git"
 	},
 	"bugs": {
-		"url": "https://github.com/zhwhuang/dsh-web-cost/issues"
+		"url": "https://github.com/zhwhuang/dsh-plugin-usageledger/issues"
 	},
-	"homepage": "https://github.com/zhwhuang/dsh-web-cost#readme",
+	"homepage": "https://github.com/zhwhuang/dsh-plugin-usageledger#readme",
 	"keywords": [
 		"dsh",
 		"dsh-plugin",
